@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres_con:
+    image: postgres:latest
+    container_name: postgres_con
+    environment:
+      POSTGRES_DB: batchDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - /media/modestnerds/Doug/docker-volumes/postgres_con:/var/lib/postgresql/data
+    networks:
+      - internal-network
+
+  batch_app:
+    image: batch_processing_demo
+    container_name: batch_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_con:5432/batchDB
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "9090:9090"
+    networks:
+      - internal-network
+
+networks:
+  internal-network:
+    driver: bridge

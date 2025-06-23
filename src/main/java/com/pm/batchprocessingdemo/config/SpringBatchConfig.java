@@ -2,11 +2,11 @@ package com.pm.batchprocessingdemo.config;
 
 import com.pm.batchprocessingdemo.model.Customer;
 import com.pm.batchprocessingdemo.repository.CustomerRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.job.builder.JobBuilder;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.data.RepositoryItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -17,6 +17,7 @@ import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @EnableBatchProcessing
@@ -27,13 +28,16 @@ public class SpringBatchConfig {
     private StepBuilder stepBuilder;
 
     private final CustomerRepository customerRepository;
-
-    public SpringBatchConfig(CustomerRepository customerRepository) {
+    private final PlatformTransactionManager transactionManager;
+    private final JobRepository jobRepository;
+    public SpringBatchConfig(CustomerRepository customerRepository, PlatformTransactionManager transactionManager, JobRepository jobRepository) {
         this.customerRepository = customerRepository;
+        this.transactionManager = transactionManager;
+        this.jobRepository = jobRepository;
     }
 
     @Bean
-    public FlatFileItemReader<Customer> reader() {
+    public FlatFileItemReader<Customer> itemReader() {
         FlatFileItemReader<Customer> itemReader = new FlatFileItemReader<>();
         itemReader.setResource(new FileSystemResource("srs/main/resources/customers.csv"));
         itemReader.setName("csvReader");
@@ -48,10 +52,10 @@ public class SpringBatchConfig {
         lineTokenizer.setDelimiter(",");
         lineTokenizer.setStrict(false);
         lineTokenizer.setNames("id", "firstName", "lastName", "email", "gender", "contactNo", "country", "dob");
-        BeanWrapperFieldSetMapper<Customer> beanWrapperFieldSetMapper = new BeanWrapperFieldSetMapper<>();
-        beanWrapperFieldSetMapper.setTargetType(Customer.class);
+        BeanWrapperFieldSetMapper<Customer> fieldSetMapper = new BeanWrapperFieldSetMapper<>();
+        fieldSetMapper.setTargetType(Customer.class);
         lineMapper.setLineTokenizer(lineTokenizer);
-        lineMapper.setFieldSetMapper(beanWrapperFieldSetMapper);
+        lineMapper.setFieldSetMapper(fieldSetMapper);
         return lineMapper;
     }
 
@@ -67,16 +71,20 @@ public class SpringBatchConfig {
         return writer;
     }
 
-//    @Bean
-//    public Step step1() {
-//        return new stepBuilder.get("csv-step").<Customer,Customer>chunk(10)
-//                .reader(reader())
-//                .processor(customerProcessor())
-//                .witer(writer())
-//                .build();
-//    }
-//    @Bean
-//    public Job job() {
-//
-//    }
+    @Bean
+    public Step importCustomerStep() {
+        return new StepBuilder("csv-import",jobRepository)
+                .<Customer,Customer>chunk(10,transactionManager)
+                .reader(itemReader())
+                .processor(customerProcessor())
+                .writer(writer())
+                .build();
+    }
+
+    @Bean
+    public Job runjob(){
+        return new JobBuilder("importCustomers", jobRepository)
+                .start(importCustomerStep())
+                .build();
+    }
 }
