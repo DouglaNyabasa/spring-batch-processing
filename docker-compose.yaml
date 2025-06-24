@@ -15,17 +15,17 @@ services:
     networks:
       - internal-network
 
-  batch_app:
-    image: batch_processing_demo
-    container_name: batch_app
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_con:5432/batchDB
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
-    ports:
-      - "9090:9090"
-    networks:
-      - internal-network
+#  batch_app:
+#    image: batch_processing_demo
+#    container_name: batch_app
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_con:5432/batchDB
+#      SPRING_DATASOURCE_USERNAME: postgres
+#      SPRING_DATASOURCE_PASSWORD: password
+#    ports:
+#      - "9090:9090"
+#    networks:
+#      - internal-network
 
 networks:
   internal-network:

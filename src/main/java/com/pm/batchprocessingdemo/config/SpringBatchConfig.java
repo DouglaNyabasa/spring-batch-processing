@@ -24,12 +24,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 public class SpringBatchConfig {
 
-    private  JobBuilder jobBuilder;
-    private StepBuilder stepBuilder;
+
 
     private final CustomerRepository customerRepository;
     private final PlatformTransactionManager transactionManager;
     private final JobRepository jobRepository;
+
     public SpringBatchConfig(CustomerRepository customerRepository, PlatformTransactionManager transactionManager, JobRepository jobRepository) {
         this.customerRepository = customerRepository;
         this.transactionManager = transactionManager;
