@@ -1,53 +1,4 @@
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/batchDB
-#    username: postgres
-#    password: password
-#    driver-class-name: org.postgresql.Driver
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
-#    database-platform: org.hibernate.dialect.PostgreSQLDialect
-#  batch:
-#    jdbc:
-#      initialize-schema: ALWAYS
-#    job:
-#      enabled: false
-#  application:
-#    name: batchProcessingDemo
-#server:
-#  port: 9090
 
-
-
-
-#spring:
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/batchDB
-#    username: postgres
-#    password: password
-#    driver-class-name: org.postgresql.Driver
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
-#    show-sql: true
-#    properties:
-#      hibernate:
-#        format_sql: true
-#    database-platform: org.hibernate.dialect.PostgreSQLDialect
-#  batch:
-#    jdbc:
-#      initialize-schema: ALWAYS
-#    job:
-#      enabled: false
-#  application:
-#    name: batchProcessingDemo
-#server:
-#  port: 9090
 
 spring:
   datasource:
@@ -57,14 +8,14 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update  # Use 'update' to avoid dropping tables in development
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
   batch:
     jdbc:
-      initialize-schema: ALWAYS  # Ensure batch schema is initialized
+      initialize-schema: ALWAYS
     job:
       enabled: false
   application:
